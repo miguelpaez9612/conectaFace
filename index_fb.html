@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html>
+    <head>
+       <meta charset="utf-8">
+
+        <meta name="viewport" content="initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width">
+        <title>fb api</title>
+          <script type="text/javascript" src="js/jquery-2.1.3.min.js"></script>
+        
+          <link rel="stylesheet" href="css/bootstrap.css">
+          <script type="text/javascript">
+            var frases=[{
+                  frase:'Es difícil crear ideas y fácil crear palabras;'+ 
+                  'de ahí el éxito de los filósofos.',
+                  autor:'André Maurois'
+                },
+                {
+                  frase:'Vivir sin filosofar es, propiamente, tener los ojos cerrados,'+ 
+                  'sin tratar de abrirlos jamás.',
+                  autor:'René Descartes'
+                },
+                {
+                  frase:'Nuestro carácter es el resultado de nuestra conducta.',
+                  autor:'Aristóteles'
+                },
+                {
+                  frase:'Observa, escucha, calla. Juzga poco, pregunta mucho.',
+                  autor:'Arturo Graf' 
+                },
+              ];
+
+
+          window.onload=function() {
+            FB.init({
+              appId      : '1316224838898213',
+              xfbml      : true,
+              version    : 'v2.5'
+            });
+          };
+
+        (function(d, s, id){
+           var js, fjs = d.getElementsByTagName(s)[0];
+           if (d.getElementById(id)) {return;}
+           js = d.createElement(s); js.id = id;
+           js.src = "//connect.facebook.net/es_LA/sdk.js";
+           fjs.parentNode.insertBefore(js, fjs);
+         }(document, 'script', 'facebook-jssdk'));
+   
+          $(document).ready(function(){
+              $('#btn_init').click(function(){
+                  FB.getLoginStatus(function(response) {
+                    if (response.status === 'connected') {
+                        $('#lb_msj').html('Ud ya ha iniciado sesión');
+                        getFrases();
+                    }
+                    else {
+                      FB.login(function(response) {
+                        if (response.status === 'connected') {
+                           $('#lb_msj').html('Sesión iniciada');
+                           getFrases();
+                        } else if (response.status === 'not_authorized') {
+                           $('#lb_msj').html('Acceso no autorizado');
+                        } else {
+                           $('#lb_msj').html('No ha iniciado sesión con esta App');
+                        }
+                      },{scope: 'public_profile,email,user_friends'});
+                    }
+                  });
+                
+               });
+
+              $('#btn_out').click(function(){
+                  FB.logout(function(response) {
+                    $('#lb_msj').html('Sesión Cerrada');
+                  });
+               });   
+
+           
+          });
+
+          function getFrases(){
+            for(var i=0; i<frases.length; i++){
+              var div=document.createElement("div");
+              div.setAttribute("id","div"+i);
+              div.setAttribute("onclick","postearFrase(this.id);");
+               div.setAttribute("class","selected");
+              div.innerHTML=""+frases[i].frase+"<br>-"+frases[i].autor+"-";
+              var br=document.createElement("br");
+              $('#content').append(div);
+              $('#content').append(br);
+            }
+          }
+
+          function postearFrase(id_div){
+            FB.api('/me/feed', 'post', {message: $('#'+id_div).text()},function(response) {
+                if (!response || response.error) {
+                  $('#lb_msj').html('Error al postear frase, intente mas tarde');
+                } else {
+                   $('#lb_msj').html('frase posteada..'+response.id);
+                }
+              });
+          }
+
+          function postStory(){
+              FB.ui({
+                method: 'feed',
+                link: 'https://www.youtube.com/user/uknow2606',
+                caption: 'videos tutoriales',
+                description:'canal de sencillos tutoriales',
+                picture:'https://www.google.co.jp/logos/doodles/2014/doodle-4-google-2014-japan-winner-5109465267306496.2-hp.png',
+              }, function(response){
+                  if(response && !response.error_message){
+                    $('#lb_msj').text('link posteado'+response.post_id);
+                  }
+                  else{
+                    $('#lb_msj').text('error ...');
+                  }
+              });
+          }
+
+          function shareStory(){
+              FB.ui({
+                method: 'share',
+                href: 'www.google.com',
+              }, function(response){
+                   if(response && !response.error_message){
+                    $('#lb_msj').text('link posteado'+response.post_id);
+                  }
+                  else{
+                    $('#lb_msj').text('error ...');
+                  }
+              });
+          }
+
+          </script>
+          <style>
+            #content{
+                position: relative;
+                left: 20px;
+                font-size: 14pt;
+            }
+            .selected{
+              border-style: solid;
+              border-width: 1px;
+              border-color: black;
+              cursor: pointer;
+            }
+            .selected:hover{
+              background-color: #0F6DB1;
+              color:white;
+              font-weight: bold;
+            }
+          </style>
+    </head>
+    <body>
+        <div class="">
+            <h1>---  FB API DEMO  --</h1>
+            <div id="content" class="">
+                <button id="btn_init" class="btn btn-primary btn-lg" onclick="">Iniciar Sesión </button><br>
+                <button id="btn_out" class="btn btn-danger btn-lg" onclick="">Cerrar Sesión </button><br>
+                <button id="btn_" class="btn btn-info btn-lg" onclick="postStory();">postear link </button><br>
+                <button id="btn_" class="btn btn-warning btn-lg" onclick="shareStory();">compartir link </button><br>
+                <label class="control-label">Estado:</label>
+                <label id="lb_msj" class="control-label"></label>
+             
+            </div>
+        </div>
+        
+    </body>
+</html>
