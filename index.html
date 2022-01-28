@@ -8,7 +8,30 @@
           <script type="text/javascript" src="js/jquery-2.1.3.min.js"></script>
         
           <link rel="stylesheet" href="css/bootstrap.css">
+        
+<script>
+  window.fbAsyncInit = function() {
+    FB.init({
+      appId      : '1316224838898213',
+      cookie     : true,
+      xfbml      : true,
+      version    : 'v12.0'
+    });
+      
+    FB.AppEvents.logPageView();   
+      
+  };
+
+  (function(d, s, id){
+     var js, fjs = d.getElementsByTagName(s)[0];
+     if (d.getElementById(id)) {return;}
+     js = d.createElement(s); js.id = id;
+     js.src = "https://connect.facebook.net/en_US/sdk.js";
+     fjs.parentNode.insertBefore(js, fjs);
+   }(document, 'script', 'facebook-jssdk'));
+</script>
           <script type="text/javascript">
+              
             var frases=[{
                   frase:'Es difícil crear ideas y fácil crear palabras;'+ 
                   'de ahí el éxito de los filósofos.',
